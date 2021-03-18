@@ -1,0 +1,3 @@
+/home/gedor/workspace/Trabalho1/trabalho1cpp/CMakeFiles/rebuild_cache.dir
+/home/gedor/workspace/Trabalho1/trabalho1cpp/CMakeFiles/edit_cache.dir
+/home/gedor/workspace/Trabalho1/trabalho1cpp/CMakeFiles/main.dir
