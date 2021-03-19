@@ -3,6 +3,9 @@ all: exit
 	@echo "Compiling..."
 	@echo "Compilation complete!"
 	@echo""
+	@echo "Executando..."
+	@echo
+	./exe
 
 exit: imagem.o main.o
 	$(CP) -o exe imagem.o main.o -lm
