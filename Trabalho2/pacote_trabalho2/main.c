@@ -9,9 +9,9 @@ float integral(Imagem* img, int i, int j) {
 int main() {
     Imagem *img, *img_out, *img_buffer;
     int window_size = 8;
-    int window_width = 1;
+    int window_width = 15;
     int window_height = 11;
-    img = abreImagem("./Exemplos/a01 - Original.bmp", 1);
+    img = abreImagem("./Exemplos/b01 - Original.bmp", 3);
     img_out = criaImagem(img->largura, img->altura, img->n_canais);
     printf("\n[Dimensões] %d x %d \n", img->altura, img->largura);
     img_buffer = criaImagem(img->largura, img->altura, img->n_canais);
@@ -122,29 +122,67 @@ int main() {
                 img_buffer->dados[canal][i][0] = img->dados[canal][i][0] + img_buffer->dados[canal][i - 1][0];
             } else {
                 img_buffer->dados[canal][0][0] = img->dados[canal][0][0];
+                for (int j = 1; j < img->largura; j++) {
+                    img_buffer->dados[canal][i][j] = img->dados[canal][i][j] + img_buffer->dados[canal][i][j - 1];
+                }
             }
-            for (int j = 1; j < img->largura; j++) {
-                img_buffer->dados[canal][i][j] = img->dados[canal][i][j] + img_buffer->dados[canal][i][j - 1];
-            }
+            
         }
     }
 
     for (int canal = 0; canal < img->n_canais; canal++) {
         for (int i = 1; i < img->altura; i++) {
             for (int j = 1; j < img->largura; j++) {
-                img_buffer->dados[canal][i][j] =  img_buffer->dados[canal][i][j] + img_buffer->dados[canal][i - 1][j] - img_buffer->dados[canal][i - 1][j - 1];
+                img_buffer->dados[canal][i][j] =  img->dados[canal][i][j] + img_buffer->dados[canal][i][j - 1]+ img_buffer->dados[canal][i - 1][j] - img_buffer->dados[canal][i - 1][j - 1];
             }
         }
     } // integral da imagem calculada
 
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 0; i < img->altura; i++) {
+            for (int j = 0; j < img->largura; j++) {
+                int i_window_top = (i - window_height / 2) >= 0 ? (i - window_height / 2) : 0;
+                int i_window_bot = (i + window_height / 2) < img->altura ? (i +  window_height / 2) : (img->altura - 1);
+                int j_window_left = (j - window_width / 2) >= 0 ? (j - window_width / 2) : 0;
+                int j_window_right = (j + window_width /2) < img->largura ? (j + window_width /2) : (img->largura -1);
 
+                printf("\n\n[%d][%d]\n", i,j );
+                printf("IT: %d\n", i_window_top);
+                printf("IB: %d\n", i_window_bot);
+                printf("JL: %d\n", j_window_left);
+                printf("JR: %d\n", j_window_right);
+
+                float D = img_buffer->dados[canal][i_window_bot][j_window_right];
+                float A = (i_window_top - 1 >= 0) && (j_window_left - 1 >= 0) ? img_buffer->dados[canal][i_window_top - 1 ][j_window_left - 1] : 0;
+                float C = (j_window_left - 1 >= 0) ? img_buffer->dados[canal][i_window_bot][j_window_left - 1] : 0;
+                float B = (i_window_top - 1 >= 0) ? img_buffer->dados[canal][i_window_top - 1][j_window_right] : 0;
+
+                float area  = D + A - C - B;
+                int size = (i_window_bot - i_window_top + 1) * (j_window_right - j_window_left + 1);
+                printf("Size: %d\n", size);
+                // if (i == 3 && j == 3) {
+                //     getchar();
+                // }
+                img_out->dados[canal][i][j] = area/size;
+            }
+        }
+    }
+
+
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 0; i < img->altura; i++) {
+            for (int j = 0; j < img->largura; j++) {
+                img_buffer->dados[canal][i][j] = img_buffer->dados[canal][i][j] / 500;
+            }
+        }
+    }
 
     printf("\n[Dimensões index] %d x %d \n", img_out->altura -1, img_out->largura-1);
     printf("\n[Dimensões] %d x %d \n", img_buffer->altura, img_buffer->largura);
     printf("canal: %d \n", img->n_canais);
     salvaImagem(img, "somebody.bmp");
-    salvaImagem(img_buffer, "somebody-buffer.bmp");
-    // salvaImagem(img_out, "somebody-out.bmp");
+    salvaImagem(img_buffer, "somebody-buffe.bmp");
+    salvaImagem(img_out, "somebody-out.bmp");
     destroiImagem(img);
     destroiImagem(img_out);
     destroiImagem(img_buffer);
