@@ -2,6 +2,10 @@
 #include <math.h>
 #include "imagem.h"
 
+float integral(Imagem* img, int i, int j) {
+
+}
+
 int main() {
     Imagem *img, *img_out, *img_buffer;
     int window_size = 8;
@@ -86,7 +90,7 @@ int main() {
 
 
     // Algoritmo ingênuo
-    for (int canal = 0; canal < img->n_canais; canal++) {
+    /*for (int canal = 0; canal < img->n_canais; canal++) {
         for (int i = window_height /2 ; i < img->altura - window_height /2; i++) {
             for (int j = window_width /2; j < img->largura - window_width/2; j++) {
 
@@ -109,13 +113,38 @@ int main() {
 
             }
         }
+    }*/
+
+    // Imagens integrais
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 0; i < img->altura; i++) {
+            if (i != 0) {
+                img_buffer->dados[canal][i][0] = img->dados[canal][i][0] + img_buffer->dados[canal][i - 1][0];
+            } else {
+                img_buffer->dados[canal][0][0] = img->dados[canal][0][0];
+            }
+            for (int j = 1; j < img->largura; j++) {
+                img_buffer->dados[canal][i][j] = img->dados[canal][i][j] + img_buffer->dados[canal][i][j - 1];
+            }
+        }
     }
+
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 1; i < img->altura; i++) {
+            for (int j = 1; j < img->largura; j++) {
+                img_buffer->dados[canal][i][j] =  img_buffer->dados[canal][i][j] + img_buffer->dados[canal][i - 1][j] - img_buffer->dados[canal][i - 1][j - 1];
+            }
+        }
+    } // integral da imagem calculada
+
+
+
     printf("\n[Dimensões index] %d x %d \n", img_out->altura -1, img_out->largura-1);
     printf("\n[Dimensões] %d x %d \n", img_buffer->altura, img_buffer->largura);
     printf("canal: %d \n", img->n_canais);
     salvaImagem(img, "somebody.bmp");
-    // salvaImagem(img_buffer, "somebody-buffer.bmp");
-    salvaImagem(img_out, "somebody-out.bmp");
+    salvaImagem(img_buffer, "somebody-buffer.bmp");
+    // salvaImagem(img_out, "somebody-out.bmp");
     destroiImagem(img);
     destroiImagem(img_out);
     destroiImagem(img_buffer);
