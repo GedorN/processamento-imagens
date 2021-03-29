@@ -1,15 +1,14 @@
 CP = gcc
-EXEC = exe
-all: exit
+all: gaussian boxblur
 	@echo "Compiling..."
 	@echo "Compilation complete!"
-	@echo 
-	@echo "Executando arquivo"
 	@echo
-	./exe
 
-exit: filtros2d.o base.o
-	$(CP) -o $(EXEC) imagem.o base.o filtros2d.o main.c -lm
+boxblur: filtros2d.o base.o
+	$(CP) -o boxblur imagem.o base.o filtros2d.o main.c -lm -DBOX_BLUR 
+
+gaussian: filtros2d.o base.o
+	$(CP) -o gaussian imagem.o base.o filtros2d.o main.c -lm -DGAUSSIAN 
 
 filtros2d.o: filtros2d.c base.o imagem.o
 	$(CP) -o filtros2d.o -c imagem.o base.o filtros2d.c -lm

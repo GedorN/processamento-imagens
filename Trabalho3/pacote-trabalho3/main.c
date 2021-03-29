@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "imagem.h"
 #include "filtros2d.h"
 #include "base.h"
@@ -52,15 +53,65 @@ Imagem*  integral (Imagem  *img, Imagem *img_out, int window_height, int window_
     return img_out;
 }
 
-int main () {
-    printf("Olá\n");
-    int suavizacao = 3; //7
-    Imagem *img = abreImagem("WindWakerGC.bmp", 3);
-    Imagem *light_mask = criaImagem(img->largura, img->altura, img->n_canais);
-    Imagem *img_out = criaImagem(img->largura, img->altura, img->n_canais);
-    Imagem *aux = criaImagem(img->largura, img->altura, img->n_canais);
+Imagem* boxBlur (Imagem* img, Imagem* img_out, Imagem *light_mask, int smoothing) {
     Imagem *buffer = criaImagem(img->largura, img->altura, img->n_canais);
     Imagem *buffer_aux = criaImagem(img->largura, img->altura, img->n_canais);
+    buffer_aux=  integral(light_mask, buffer_aux, 20, 20);
+
+    for (int i = 0; i < 2 * smoothing; i++) {
+        buffer_aux=  integral(light_mask, buffer_aux, 10, 10);
+        soma(buffer, buffer_aux, 1, 1, buffer);
+    }
+
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 0; i < img->altura; i++) {
+            for (int j = 0; j < img->largura; j++) {
+                double sum = 0.08 * buffer->dados[canal][i][j] + 1 * img->dados[canal][i][j];
+                img_out->dados[canal][i][j] = sum > 1 ? 1 : sum; 
+            }
+        }
+    }
+
+    destroiImagem(buffer);
+    destroiImagem(buffer_aux);
+
+    return img_out;
+
+}
+
+Imagem* gaussian(Imagem* img, Imagem* img_out, Imagem *light_mask, int smoothing) {
+    Imagem *buffer = criaImagem(img->largura, img->altura, img->n_canais);
+    Imagem *buffer_aux = criaImagem(img->largura, img->altura, img->n_canais);
+    for (int i = 0; i < smoothing; i++) {
+        filtroGaussiano(light_mask, buffer_aux, (i + 1) * 10, (i + 1) * 10, NULL);
+        soma(buffer, buffer_aux, 1, 1, buffer);
+    }
+
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 0; i < img->altura; i++) {
+            for (int j = 0; j < img->largura; j++) {
+                double sum = 0.08 * buffer->dados[canal][i][j] + 1 * img->dados[canal][i][j];
+                img_out->dados[canal][i][j] = sum > 1 ? 1 : sum; 
+            }
+        }
+    }
+
+    destroiImagem(buffer);
+    destroiImagem(buffer_aux);
+
+    return img_out;
+}
+
+int main (int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("\nMissing parameter: image\n");
+        exit(-1);
+    }
+    int smoothing;
+    char* img_out_name;
+    Imagem *img = abreImagem(argv[1], 3);
+    Imagem *light_mask = criaImagem(img->largura, img->altura, img->n_canais);
+    Imagem *img_out = criaImagem(img->largura, img->altura, img->n_canais);
     
     for (int i = 0; i < img->altura; i++) {
         for (int j = 0; j < img->largura; j++) {
@@ -75,44 +126,34 @@ int main () {
                 light_mask->dados[2][i][j] = 0;
             }
         }
-    }
-    aux = clonaImagem(light_mask);
-    buffer_aux=  integral(light_mask, buffer_aux, 20, 20);
+    } // Máscara de luz criada
 
-    for (int i = 0; i < 2 * suavizacao; i++) {
-        buffer_aux=  integral(aux, buffer_aux, 10, 10);
-        // aux = clonaImagem(buffer_aux);
-        soma(buffer, buffer_aux, 1, 1, buffer);
-    }
 
-    // for (int i = 0; i < suavizacao; i++) {
-    //     filtroGaussiano(aux, buffer_aux, (i + 1) * 10, (i + 1) * 10, NULL);
-    //     soma(buffer, buffer_aux, 1, 1, buffer);
-    // }
+    
+    #ifdef GAUSSIAN
+        smoothing = 7;
+        img_out_name = "img_gaussian.bmp";
+        printf("O filtro Gaussiano pode levar um para ser executado...\n");
+        printf("Para diminuir esse tempo, contarei uma piada: \n");
+        printf("Qual o som que um pato atômico faz?\n");
+        printf("  -Quark, Quark!\n");
+        img_out = gaussian(img, img_out, light_mask, smoothing);
+    #endif
+    #ifdef BOX_BLUR
+        smoothing = 3;
+        img_out_name = "img_boxblur.bmp";
+        img_out = boxBlur(img, img_out, light_mask, smoothing);
+    #endif
 
-    for (int canal = 0; canal < img->n_canais; canal++) {
-        for (int i = 0; i < img->altura; i++) {
-            for (int j = 0; j < img->largura; j++) {
-                double sum = 0.08 * buffer->dados[canal][i][j] + 1 * img->dados[canal][i][j];
-                img_out->dados[canal][i][j] = sum > 1 ? 1 : sum; 
-            }
-        }
-    }
+    
 
 
 
 
-    salvaImagem(img, "teste.bmp");
-    salvaImagem(light_mask, "mask1.bmp");
-    salvaImagem(buffer_aux, "mask2.bmp");
-    salvaImagem(buffer, "mask3.bmp");
-    salvaImagem(img_out, "img_out.bmp");
-    destroiImagem((light_mask));
+    salvaImagem(img_out, img_out_name);
+    destroiImagem(light_mask);
     destroiImagem(img);
     destroiImagem(img_out);
-    destroiImagem(buffer);
-    destroiImagem(aux);
-    destroiImagem(buffer_aux);
     return 0;
 }
 
