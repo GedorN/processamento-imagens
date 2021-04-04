@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "imagem.h"
 #include "filtros2d.h"
+#include "segmenta.h"
 Imagem* threshold_with_integral(Imagem *img, Imagem *img_out, Imagem* img_integral, int window_height, int window_width) {
     for (int canal = 0; canal < img_integral->n_canais; canal++) {
         for (int i = 0; i < img_integral->altura; i++) {
@@ -96,51 +97,67 @@ int main() {
     // UNO
 
     img_integral = integral(img, img_integral);
-    out = filter_with_integral(out, img_integral, 125, 125);
+    out = filter_with_integral(out, img_integral, 295, 295);
     salvaImagem(out, "0.bmp");
     for (int canal = 0; canal < img->n_canais; canal++) {
         for (int i = 0; i < img->altura; i++) {
             for (int j = 0; j < img->largura; j++) {
-                out->dados[canal][i][j] = img->dados[canal][i][j] - out->dados[canal][i][j];
+                out->dados[canal][i][j] = (img->dados[canal][i][j] * 1) - (out->dados[canal][i][j] * 1);
             }
         }
     }
     salvaImagem(out, "1.bmp");
+    Imagem *aux= criaImagem(out->largura, out->altura, out->n_canais);
+    for (int i = 0; i < out->altura; i++) {
+        for (int j = 0; j < out->largura; j++) {
+            double value = out->n_canais > 1 ? (out->dados[0][i][j] * 0.299f) + (out->dados[1][i][j] * 0.587f)+ (out->dados[2][i][j] * 0.114f) : out->dados[0][i][j];
+            if (value >= 0.25) {
+                if (out->n_canais > 1) {
+                    aux->dados[0][i][j] = 1;
+                    aux->dados[1][i][j] = 1;
+                    aux->dados[2][i][j] = 1;
+                } else {
+                    aux->dados[0][i][j] = 1;
+                }
+                
+            } else {
+                if (out->n_canais > 1) {
+                    aux->dados[0][i][j] = 0;
+                    aux->dados[1][i][j] = 0;
+                    aux->dados[2][i][j] = 0;
+                } else {
+                    aux->dados[0][i][j] = 0;
+                }
+            }
+        }
+    }
+    salvaImagem(aux, "2.bmp");
 
     // ===================
-    Imagem *aux = clonaImagem(out);
-
-    for (int canal = 0; canal < img->n_canais; canal++) {
-        for (int i = 0; i < img->altura; i++) {
-            for (int j = 0; j < img->largura; j++) {
-                img_integral->dados[canal][i][j] = 0;
-            }
-        }
-    }
-    for (int canal = 0; canal < img->n_canais; canal++) {
-        for (int i = 0; i < img->altura; i++) {
-            for (int j = 0; j < img->largura; j++) {
-                out->dados[canal][i][j] = 0;
-            }
-        }
-    }
-    img_integral = integral(aux, img_integral);
-    out = filter_with_integral(out, img_integral, 75, 75);
-    salvaImagem(out, "2.bmp");
-     for (int canal = 0; canal < img->n_canais; canal++) {
-        for (int i = 0; i < img->altura; i++) {
-            for (int j = 0; j < img->largura; j++) {
-                out->dados[canal][i][j] = aux->dados[canal][i][j] - out->dados[canal][i][j];
+    Imagem *final = criaImagem(out->largura, out->altura, out->n_canais);
+    Imagem *kernel = criaImagem(3, 3, 1);
+    Coordenada cod;
+    cod.x = 1;
+    cod.y= 1;
+    for (int canal = 0; canal < 1; canal++) {
+        for (int i = 0; i < kernel->altura; i++) {
+            for (int j = 0; j < kernel->largura; j++) {
+                kernel->dados[canal][i][j] = 1;
             }
         }
     }
 
+    kernel->dados[0][cod.x][cod.y] = 0;
 
-    salvaImagem(out, "3.bmp");
+    erode(aux, kernel, cod, final);
+   
+
+    salvaImagem(final, "3.bmp");
     destroiImagem(img);
     destroiImagem(img_integral);
     destroiImagem(out);
-    destroiImagem(aux);
+    destroiImagem(kernel);
+    destroiImagem(final);
 
 
     return 0;
