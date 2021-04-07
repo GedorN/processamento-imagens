@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "imagem.h"
 #include "filtros2d.h"
 #include "segmenta.h"
+
 Imagem* threshold_with_integral(Imagem *img, Imagem *img_out, Imagem* img_integral, int window_height, int window_width) {
     for (int canal = 0; canal < img_integral->n_canais; canal++) {
         for (int i = 0; i < img_integral->altura; i++) {
@@ -81,7 +83,7 @@ Imagem* integral (Imagem  *img, Imagem *img_buffer) {
 }
 
 int main() {
-    Imagem *img = abreImagem("150.bmp", 3);
+    Imagem *img = abreImagem("82.bmp", 3);
     Imagem *img_integral = criaImagem(img->largura, img->altura, img->n_canais);
     Imagem *out = clonaImagem(img);
 
@@ -153,6 +155,24 @@ int main() {
    
 
     salvaImagem(final, "3.bmp");
+    ComponenteConexo *componente;
+    printf("Vou chamar: \n");
+
+    int components = rotulaFloodFill(final, &componente, 2, 2, 2);
+    printf("No final a verdade foi: %d\n", components);
+
+    float a = componente[0].label;
+    printf("%f", a);
+    putchar('\n');
+
+    printf("superou\n");
+
+    for (int  i = 0; i < components; i++) {
+        printf("%d\n", componente[i].n_pixels);
+    }
+
+    free(componente);
+
     destroiImagem(img);
     destroiImagem(img_integral);
     destroiImagem(out);
