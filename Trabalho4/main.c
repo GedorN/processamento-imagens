@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "imagem.h"
 #include "filtros2d.h"
 #include "segmenta.h"
@@ -156,8 +157,57 @@ Imagem* processImage(Imagem* img_integral, Imagem* img, Imagem* out) {
    
 }
 
+int processComponents(ComponenteConexo* components, int size) {
+    double average_pixels = 0;
+    int components_count = 0;
+    for (int i = 0; i < size; i++) {
+        average_pixels+= components[i].n_pixels;
+    }
+    average_pixels = average_pixels / size;
+
+    double dma = 0;
+    for (int i = 0; i < size; i++) {
+        dma += abs(components[i].n_pixels - average_pixels);
+    }
+    dma = dma / size;
+
+    for (int i = 0; i < size; i++) {
+        if ((components[i].n_pixels / average_pixels) < 1) {
+            // components_count+= ceil(components[i].n_pixels / average_pixels);
+            components_count+= 1;
+        } else {
+            printf("veja: %lf\n", ((components[i].n_pixels + dma) / average_pixels));
+            components_count+= floor((components[i].n_pixels + dma) / average_pixels);
+            // components_count+= floor((components[i].n_pixels + dma) / average_pixels) ;
+        }
+    }
+
+    // double variance = 0;
+    // for (int i = 0; i < size; i++) {
+    //     variance += pow((components[i].n_pixels - average_pixels), 2);
+    // }
+
+    // variance = variance / size;
+    // double standard_deviation = sqrt(variance);
+    // printf("Média: %lf\n", average_pixels);
+    // printf("desvio padrao %lf\n", standard_deviation);
+
+
+
+    // for (int i = 0; i < size; i++) {
+    //     if (components[i].n_pixels / average_pixels < 1) {
+    //         components_count+= (components[i].n_pixels / average_pixels) + 1;
+    //     } else {
+    //         components_count+= ((components[i].n_pixels + standard_deviation) / average_pixels) ;
+    //     }
+    // }
+    printf("dma: %lf\n", dma);
+
+    printf("total componentes com processamento: %d\n", components_count);
+}
+
 int main(int argc, char *argv[]) {
-    Imagem *img = abreImagem("82.bmp", 3);
+    Imagem *img = abreImagem("205.bmp", 3);
     Imagem *img_integral = criaImagem(img->largura, img->altura, img->n_canais);
     Imagem *out = clonaImagem(img);
 
@@ -184,17 +234,11 @@ int main(int argc, char *argv[]) {
     printf("Vou chamar: \n");
 
     int components = rotulaFloodFill(final, &componente, 2, 2, 2);
-    printf("No final a verdade foi: %d\n", components);
+    processComponents(componente, components);
 
-    float a = componente[0].label;
-    printf("%f", a);
-    putchar('\n');
-
-    printf("superou\n");
-
-    for (int  i = 0; i < components; i++) {
-        printf("%d\n", componente[i].n_pixels);
-    }
+    // for (int  i = 0; i < components; i++) {
+    //     printf("%d\n", componente[i].n_pixels);
+    // }
 
     printf("Total componentes: %d\n", components);
 
