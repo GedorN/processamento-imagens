@@ -82,33 +82,30 @@ Imagem* integral (Imagem  *img, Imagem *img_buffer) {
     return img_buffer;
 }
 
-int main() {
-    Imagem *img = abreImagem("82.bmp", 3);
-    Imagem *img_integral = criaImagem(img->largura, img->altura, img->n_canais);
-    Imagem *out = clonaImagem(img);
-
-    // 
-    for (int canal = 0; canal < img->n_canais; canal++) {
-        for (int i = 0; i < img->altura; i++) {
-            for (int j = 0; j < img->largura; j++) {
-                img_integral->dados[canal][i][j] = 0;
-            }
-        }
-    }
-
-    // UNO
-
+Imagem* processImage(Imagem* img_integral, Imagem* img, Imagem* out) {
+     // Filtro da média com imagem integral 
     img_integral = integral(img, img_integral);
     out = filter_with_integral(out, img_integral, 295, 295);
-    salvaImagem(out, "0.bmp");
     for (int canal = 0; canal < img->n_canais; canal++) {
         for (int i = 0; i < img->altura; i++) {
             for (int j = 0; j < img->largura; j++) {
-                out->dados[canal][i][j] = (img->dados[canal][i][j] * 1) - (out->dados[canal][i][j] * 1);
+                out->dados[canal][i][j] = img->dados[canal][i][j] - out->dados[canal][i][j];
             }
         }
     }
-    salvaImagem(out, "1.bmp");
+
+    // Filtro da média com imagem integral 
+    img_integral = integral(img, img_integral);
+    out = filter_with_integral(out, img_integral, 295, 295);
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 0; i < img->altura; i++) {
+            for (int j = 0; j < img->largura; j++) {
+                out->dados[canal][i][j] = img->dados[canal][i][j] - out->dados[canal][i][j];
+            }
+        }
+    }
+
+     // Binariza a imagem
     Imagem *aux= criaImagem(out->largura, out->altura, out->n_canais);
     for (int i = 0; i < out->altura; i++) {
         for (int j = 0; j < out->largura; j++) {
@@ -133,9 +130,8 @@ int main() {
             }
         }
     }
-    salvaImagem(aux, "2.bmp");
 
-    // ===================
+    // erode com um kernel 3x3
     Imagem *final = criaImagem(out->largura, out->altura, out->n_canais);
     Imagem *kernel = criaImagem(3, 3, 1);
     Coordenada cod;
@@ -152,6 +148,35 @@ int main() {
     kernel->dados[0][cod.x][cod.y] = 0;
 
     erode(aux, kernel, cod, final);
+
+    destroiImagem(kernel);
+    destroiImagem(aux);
+
+    return final;
+   
+}
+
+int main(int argc, char *argv[]) {
+    Imagem *img = abreImagem("82.bmp", 3);
+    Imagem *img_integral = criaImagem(img->largura, img->altura, img->n_canais);
+    Imagem *out = clonaImagem(img);
+
+    // zerando imagem
+    for (int canal = 0; canal < img->n_canais; canal++) {
+        for (int i = 0; i < img->altura; i++) {
+            for (int j = 0; j < img->largura; j++) {
+                img_integral->dados[canal][i][j] = 0;
+            }
+        }
+    }
+
+    Imagem *final = processImage(img_integral, img, out);
+
+
+    
+
+   
+
    
 
     salvaImagem(final, "3.bmp");
@@ -171,12 +196,13 @@ int main() {
         printf("%d\n", componente[i].n_pixels);
     }
 
+    printf("Total componentes: %d\n", components);
+
     free(componente);
 
     destroiImagem(img);
     destroiImagem(img_integral);
     destroiImagem(out);
-    destroiImagem(kernel);
     destroiImagem(final);
 
 
