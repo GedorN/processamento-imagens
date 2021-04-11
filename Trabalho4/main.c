@@ -158,16 +158,24 @@ Imagem* processImage(Imagem* img_integral, Imagem* img, Imagem* out) {
 }
 
 int processComponents(ComponenteConexo* components, int size) {
+    int aux_size = 0;
     double average_pixels = 0;
     int components_count = 0;
     for (int i = 0; i < size; i++) {
-        average_pixels+= components[i].n_pixels;
+        printf("tamanho: %d\n", components[i].n_pixels);
+        if (components[i].n_pixels <= 300) {
+            average_pixels+= components[i].n_pixels;
+            aux_size++;
+        }
     }
-    average_pixels = average_pixels / size;
+    average_pixels = average_pixels / aux_size;
 
-    double dma = 0;
+    /*double dma = 0;
     for (int i = 0; i < size; i++) {
-        dma += abs(components[i].n_pixels - average_pixels);
+        if (components[i].n_pixels <= 300) {
+            dma += abs(components[i].n_pixels - average_pixels);
+
+        }
     }
     dma = dma / size;
 
@@ -180,34 +188,35 @@ int processComponents(ComponenteConexo* components, int size) {
             components_count+= floor((components[i].n_pixels + dma) / average_pixels);
             // components_count+= floor((components[i].n_pixels + dma) / average_pixels) ;
         }
+    }*/
+
+    double variance = 0;
+    for (int i = 0; i < size; i++) {
+        if (components[i].n_pixels <= 300) {
+            variance += pow((components[i].n_pixels - average_pixels), 2);
+        }
     }
 
-    // double variance = 0;
-    // for (int i = 0; i < size; i++) {
-    //     variance += pow((components[i].n_pixels - average_pixels), 2);
-    // }
-
-    // variance = variance / size;
-    // double standard_deviation = sqrt(variance);
-    // printf("Média: %lf\n", average_pixels);
-    // printf("desvio padrao %lf\n", standard_deviation);
+    variance = variance / aux_size;
+    double standard_deviation = sqrt(variance);
+    printf("Média: %lf\n", average_pixels);
+    printf("desvio padrao %lf\n", standard_deviation);
 
 
 
-    // for (int i = 0; i < size; i++) {
-    //     if (components[i].n_pixels / average_pixels < 1) {
-    //         components_count+= (components[i].n_pixels / average_pixels) + 1;
-    //     } else {
-    //         components_count+= ((components[i].n_pixels + standard_deviation) / average_pixels) ;
-    //     }
-    // }
-    printf("dma: %lf\n", dma);
+    for (int i = 0; i < size; i++) {
+        if (components[i].n_pixels / average_pixels < 1) {
+            components_count+= (components[i].n_pixels / average_pixels) + 1;
+        } else {
+            components_count+= ((components[i].n_pixels + standard_deviation) / average_pixels);
+        }
+    }
 
     printf("total componentes com processamento: %d\n", components_count);
 }
 
 int main(int argc, char *argv[]) {
-    Imagem *img = abreImagem("205.bmp", 3);
+    Imagem *img = abreImagem("60.bmp", 3);
     Imagem *img_integral = criaImagem(img->largura, img->altura, img->n_canais);
     Imagem *out = clonaImagem(img);
 
