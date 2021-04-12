@@ -20,7 +20,6 @@ Imagem* threshold_with_integral(Imagem *img, Imagem *img_out, Imagem* img_integr
                 float B = (i_window_top - 1 >= 0) ? img_integral->dados[canal][i_window_top - 1][j_window_right] : 0;
 
                 float area  = D + A - C - B;
-                // printf("Average: %f - %f\n", area, img_integral->dados[canal][i][j]);
                 area = area - img->dados[canal][i][j];
                 int size = (i_window_bot - i_window_top + 1) * (j_window_right - j_window_left + 1) - 1;
                 float average = area / size;
@@ -162,47 +161,23 @@ int processComponents(ComponenteConexo* components, int size) {
     double average_pixels = 0;
     int components_count = 0;
     for (int i = 0; i < size; i++) {
-        printf("tamanho: %d\n", components[i].n_pixels);
-        if (components[i].n_pixels <= 300) {
+        if (components[i].n_pixels <= 300) { // Remoção de outliers
             average_pixels+= components[i].n_pixels;
             aux_size++;
         }
     }
     average_pixels = average_pixels / aux_size;
 
-    /*double dma = 0;
-    for (int i = 0; i < size; i++) {
-        if (components[i].n_pixels <= 300) {
-            dma += abs(components[i].n_pixels - average_pixels);
-
-        }
-    }
-    dma = dma / size;
-
-    for (int i = 0; i < size; i++) {
-        if ((components[i].n_pixels / average_pixels) < 1) {
-            // components_count+= ceil(components[i].n_pixels / average_pixels);
-            components_count+= 1;
-        } else {
-            printf("veja: %lf\n", ((components[i].n_pixels + dma) / average_pixels));
-            components_count+= floor((components[i].n_pixels + dma) / average_pixels);
-            // components_count+= floor((components[i].n_pixels + dma) / average_pixels) ;
-        }
-    }*/
 
     double variance = 0;
     for (int i = 0; i < size; i++) {
-        if (components[i].n_pixels <= 300) {
+        if (components[i].n_pixels <= 300) { // Remoção de outliers
             variance += pow((components[i].n_pixels - average_pixels), 2);
         }
     }
 
     variance = variance / aux_size;
     double standard_deviation = sqrt(variance);
-    printf("Média: %lf\n", average_pixels);
-    printf("desvio padrao %lf\n", standard_deviation);
-
-
 
     for (int i = 0; i < size; i++) {
         if (components[i].n_pixels / average_pixels < 1) {
@@ -216,7 +191,11 @@ int processComponents(ComponenteConexo* components, int size) {
 }
 
 int main(int argc, char *argv[]) {
-    Imagem *img = abreImagem("60.bmp", 3);
+    if (argc < 2) {
+        printf("Parâmetro [caminho_imagem] faltando\n");
+        exit(-1);
+    }
+    Imagem *img = abreImagem(argv[1], 3);
     Imagem *img_integral = criaImagem(img->largura, img->altura, img->n_canais);
     Imagem *out = clonaImagem(img);
 
@@ -229,28 +208,16 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    //  Tratamento para o melhor desempenho possível do FloodFill
     Imagem *final = processImage(img_integral, img, out);
 
-
-    
-
-   
-
-   
-
-    salvaImagem(final, "3.bmp");
     ComponenteConexo *componente;
-    printf("Vou chamar: \n");
-
     int components = rotulaFloodFill(final, &componente, 2, 2, 2);
+
+    // Processa os componentes usando recursos estatísticos para tentar se aproximar ao máximo da quantidade real de arroz nas imagens
     processComponents(componente, components);
 
-    // for (int  i = 0; i < components; i++) {
-    //     printf("%d\n", componente[i].n_pixels);
-    // }
-
-    printf("Total componentes: %d\n", components);
-
+    
     free(componente);
 
     destroiImagem(img);

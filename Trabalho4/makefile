@@ -3,8 +3,6 @@ all: exit
 	@echo "Compiling..."
 	@echo "Compilation complete!"
 	@echo
-	@echo "Executando..."
-	./exe
 
 exit: main.o imagem.o base.o filtros2d.o segmenta.o geometria.o
 	$(CP) -o exe imagem.o main.o filtros2d.o base.o segmenta.o geometria.o -lm
