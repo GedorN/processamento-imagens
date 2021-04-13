@@ -187,7 +187,8 @@ int processComponents(ComponenteConexo* components, int size) {
         }
     }
 
-    printf("total componentes com processamento: %d\n", components_count);
+
+    return components_count;
 }
 
 int main(int argc, char *argv[]) {
@@ -215,9 +216,10 @@ int main(int argc, char *argv[]) {
     int components = rotulaFloodFill(final, &componente, 2, 2, 2);
 
     // Processa os componentes usando recursos estatísticos para tentar se aproximar ao máximo da quantidade real de arroz nas imagens
-    processComponents(componente, components);
+    int finded_components = processComponents(componente, components);
 
-    
+    printf("Estimativa de arrozes encontrados: %d\n", finded_components);
+      
     free(componente);
 
     destroiImagem(img);
