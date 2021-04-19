@@ -1,9 +1,9 @@
 /*============================================================================*/
-/* MANIPULAÇÃO DE CORES                                                       */
+/* MANIPULAï¿½ï¿½O DE CORES                                                       */
 /*----------------------------------------------------------------------------*/
 /* Autor: Bogdan T. Nassu - nassu@dainf.ct.utfpr.edu.br                       */
 /*============================================================================*/
-/** Tipos e funções para manipulação de cores. */
+/** Tipos e funï¿½ï¿½es para manipulaï¿½ï¿½o de cores. */
 /*============================================================================*/
 
 #include <stdio.h>
@@ -16,9 +16,9 @@
 /*============================================================================*/
 /* TIPO Cor                                                                   */
 /*============================================================================*/
-/** Apenas uma função útil para "criar" uma instância do tipo Cor.
+/** Apenas uma funï¿½ï¿½o ï¿½til para "criar" uma instï¿½ncia do tipo Cor.
  *
- * Parâmetros: float r: valor do canal R.
+ * Parï¿½metros: float r: valor do canal R.
  *             float g: valor do canal G.
  *             float b: valor do canal B.
  *
@@ -34,12 +34,12 @@ Cor criaCor (float r, float g, float b)
 }
 
 /*============================================================================*/
-/* CONVERSÕES DE CORES                                                        */
+/* CONVERSï¿½ES DE CORES                                                        */
 /*============================================================================*/
 /** Converte uma imagem de RGB para escala de cinza.
  *
- * Parâmetros: Imagem* in: imagem de entrada de 3 canais.
- *             Imagem* out: imagem de saída de 1 canal, com o mesmo tamanho.
+ * Parï¿½metros: Imagem* in: imagem de entrada de 3 canais.
+ *             Imagem* out: imagem de saï¿½da de 1 canal, com o mesmo tamanho.
  *
  * Valor de retorno: nenhum. */
 
@@ -63,9 +63,9 @@ void RGBParaCinza (Imagem* in, Imagem* out)
         exit (1);
     }
 
-    /* Percorre a imagem e converte. Usamos aqui os mesmos fatores de conversão
-       do OpenCV, o que mantém certas propriedades de percepção (i.e. não são
-	   parâmetros "mágicos"). */
+    /* Percorre a imagem e converte. Usamos aqui os mesmos fatores de conversï¿½o
+       do OpenCV, o que mantï¿½m certas propriedades de percepï¿½ï¿½o (i.e. nï¿½o sï¿½o
+	   parï¿½metros "mï¿½gicos"). */
     int i, j;
 	for (i = 0; i < in->altura; i++)
         for (j = 0; j < in->largura; j++)
@@ -75,8 +75,8 @@ void RGBParaCinza (Imagem* in, Imagem* out)
 /*----------------------------------------------------------------------------*/
 /** Converte uma imagem de escala de cinza para RGB.
  *
- * Parâmetros: Imagem* in: imagem de entrada de 1 canal.
- *             Imagem* out: imagem de saída de 3 canais, com o mesmo tamanho.
+ * Parï¿½metros: Imagem* in: imagem de entrada de 1 canal.
+ *             Imagem* out: imagem de saï¿½da de 3 canais, com o mesmo tamanho.
  *
  * Valor de retorno: nenhum. */
 
@@ -109,10 +109,10 @@ void cinzaParaRGB (Imagem* in, Imagem* out)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Conversão RGB -> HSL. Simplesmente segui as fórmulas.
+/** Conversï¿½o RGB -> HSL. Simplesmente segui as fï¿½rmulas.
  *
- * Parâmetros: Imagem* in: imagem de entrada.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ * Parï¿½metros: Imagem* in: imagem de entrada.
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *
  * Valor de retorno: nenhum */
@@ -180,10 +180,10 @@ void RGBParaHSL (Imagem* in, Imagem* out)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Conversão HSL -> RGB. Simplesmente segui as fórmulas.
+/** Conversï¿½o HSL -> RGB. Simplesmente segui as fï¿½rmulas.
  *
- * Parâmetros: Imagem* in: imagem de entrada.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ * Parï¿½metros: Imagem* in: imagem de entrada.
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *
  * Valor de retorno: nenhum */
@@ -211,7 +211,7 @@ void HSLParaRGB (Imagem* in, Imagem* out)
             s = in->dados [1][row][col];
             l = in->dados [2][row][col];
 
-            if (s < FLT_EPSILON) // Sem saturação = sem cor.
+            if (s < FLT_EPSILON) // Sem saturaï¿½ï¿½o = sem cor.
             {
                 out->dados [0][row][col] = l;
                 out->dados [1][row][col] = l;
@@ -266,13 +266,13 @@ void HSLParaRGB (Imagem* in, Imagem* out)
 }
 
 /*============================================================================*/
-/* TRANSFORMAÇÕES DE CORES                                                    */
+/* TRANSFORMAï¿½ï¿½ES DE CORES                                                    */
 /*============================================================================*/
 /** Inverte as cores de uma imagem, usando o complemento. Supomos pixels com
  * valores no intervalo [0,1].
  *
- * Parâmetros: Imagem* in: imagem de entrada.
- *             Imagem* out: imagem de saída, com o mesmo tamanho e número de
+ * Parï¿½metros: Imagem* in: imagem de entrada.
+ *             Imagem* out: imagem de saï¿½da, com o mesmo tamanho e nï¿½mero de
  *               canais.
  *
  * Valor de retorno: nenhum. */
@@ -295,9 +295,9 @@ void inverte (Imagem* in, Imagem* out)
 /*----------------------------------------------------------------------------*/
 /** Ajuste simples de brilho e contraste: g(x,y) = (f(x,y)-0.5)*C + 0.5 + B.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             float brilho: ajuste do brilho.
  *             float contraste: ajuste do contraste.
@@ -322,9 +322,9 @@ void ajustaBrilhoEContraste (Imagem* in, Imagem* out, float brilho, float contra
 /*----------------------------------------------------------------------------*/
 /** Ajuste simples de gama: g(x,y) = f(x,y)-^G
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             float gama: valor do gama.
  *
@@ -346,15 +346,15 @@ void ajustaGama  (Imagem* in, Imagem* out, float gama)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Ajuste simples de cores no espaço HSL. Consideramos que as imagens já estão
- * neste espaço. Não use imagens RGB aqui!!!
+/** Ajuste simples de cores no espaï¿½o HSL. Consideramos que as imagens jï¿½ estï¿½o
+ * neste espaï¿½o. Nï¿½o use imagens RGB aqui!!!
  *
- * Parâmetros: Imagem* in: imagem *HSL* de entrada.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ * Parï¿½metros: Imagem* in: imagem *HSL* de entrada.
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             float matiz: offset para o matiz.
- *             float saturacao: multiplicador para a saturação.
- *             float luminancia: constante somada à luminância.
+ *             float saturacao: multiplicador para a saturaï¿½ï¿½o.
+ *             float luminancia: constante somada ï¿½ luminï¿½ncia.
  *
  * Valor de retorno: nenhum */
 
