@@ -3,7 +3,7 @@
 /*----------------------------------------------------------------------------*/
 /* Autor: Bogdan T. Nassu - nassu@dainf.ct.utfpr.edu.br                       */
 /*============================================================================*/
-/** Tipos e funções para filtragem espacial. */
+/** Tipos e funï¿½ï¿½es para filtragem espacial. */
 /*============================================================================*/
 
 #include <stdio.h>
@@ -13,17 +13,17 @@
 #include "filtros2d.h"
 
 /*============================================================================*/
-/* FILTRAGEM LINEAR GENÉRICA                                                  */
+/* FILTRAGEM LINEAR GENï¿½RICA                                                  */
 /*============================================================================*/
 /** Filtragem espacial na horizontal/vertical, usando um vetor de coeficientes.
- * Use para aplicar filtros 1D ou uma componente de um filtro separável.
+ * Use para aplicar filtros 1D ou uma componente de um filtro separï¿½vel.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             float* coef: vetor de coeficientes.
- *             int n: número de valores no vetor de coeficientes.
+ *             int n: nï¿½mero de valores no vetor de coeficientes.
  *             int vertical: se != 0, aplica o filtro na vertical.
  *
  * Valor de retorno: nenhum. */
@@ -46,7 +46,7 @@ void filtro1D (Imagem* in, Imagem* out, float* coef, int n, int vertical)
     float soma;
     int centro = n/2;
 
-    // Para cada centro possível...
+    // Para cada centro possï¿½vel...
     for (channel = 0; channel < in->n_canais; channel++)
     {
         for (row = 0; row < in->altura; row++)
@@ -81,12 +81,12 @@ void filtro1D (Imagem* in, Imagem* out, float* coef, int n, int vertical)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Filtragem espacial "força bruta", usando uma matriz de coeficientes. Use
+/** Filtragem espacial "forï¿½a bruta", usando uma matriz de coeficientes. Use
  * para aplicar filtros 2D.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             float** coef: matriz de coeficientes.
  *             int altura: altura da matriz.
@@ -114,7 +114,7 @@ void filtro2D (Imagem* in, Imagem* out, float** coef, int altura, int largura, i
     int centro_x = largura/2;
     int centro_y = altura/2;
 
-    // Para cada centro possível...
+    // Para cada centro possï¿½vel...
     for (channel = 0; channel < in->n_canais; channel++)
     {
         for (row = 0; row < in->altura; row++)
@@ -151,21 +151,21 @@ void filtro2D (Imagem* in, Imagem* out, float** coef, int altura, int largura, i
 }
 
 /*============================================================================*/
-/* FILTRO DA MÉDIA                                                            */
+/* FILTRO DA Mï¿½DIA                                                            */
 /*============================================================================*/
-/** Implementação de box blur usando uma imagem integral.
+/** Implementaï¿½ï¿½o de box blur usando uma imagem integral.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             int altura: altura da janela.
  *             int largura: largura da janela.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
- * Valor de retorno: nenhum (usa a imagem de saída). */
+ * Valor de retorno: nenhum (usa a imagem de saï¿½da). */
 
 void blur (Imagem* in, Imagem* out, int altura, int largura, Imagem* buffer)
 {
@@ -209,7 +209,7 @@ void blur (Imagem* in, Imagem* out, int altura, int largura, Imagem* buffer)
                 integral->dados [channel][row][col] += integral->dados [channel][row-1][col];
     }
 
-    // Agora calcula as médias.
+    // Agora calcula as mï¿½dias.
     int top, left, bottom, right;
     float soma, area;
     for (channel = 0; channel < in->n_canais; channel++)
@@ -237,29 +237,29 @@ void blur (Imagem* in, Imagem* out, int altura, int largura, Imagem* buffer)
 /*============================================================================*/
 /* FILTRO GAUSSIANO                                                           */
 /*============================================================================*/
-/** Implementação de filtro Gaussiano. Como a filtragem Gaussiana é separável,
+/** Implementaï¿½ï¿½o de filtro Gaussiano. Como a filtragem Gaussiana ï¿½ separï¿½vel,
  * fazemos o processo primeiro na horizontal e depois na vertical. Os
- * coeficientes são calculados com base no sigma, que deve ser positivo,
- * exceto em 3 casos especiais: -3, -5 e -7. Nestes casos, o valor não é
- * interpretado como o sigma, e são usados os coeficientes clássicos para a
- * aproximação 3x3 com sigma=0.8; 5x5 com sigma=1.1; e 7x7 com sigma=1.4,
+ * coeficientes sï¿½o calculados com base no sigma, que deve ser positivo,
+ * exceto em 3 casos especiais: -3, -5 e -7. Nestes casos, o valor nï¿½o ï¿½
+ * interpretado como o sigma, e sï¿½o usados os coeficientes clï¿½ssicos para a
+ * aproximaï¿½ï¿½o 3x3 com sigma=0.8; 5x5 com sigma=1.1; e 7x7 com sigma=1.4,
  * respectivamente.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
- *             float sigmax: desvio padrão na horizontal. Deve ser positivo,
+ *             float sigmax: desvio padrï¿½o na horizontal. Deve ser positivo,
  *               ou um dos 3 valores especiais.
- *             float sigmay: desvio padrão na vertical. Deve ser positivo,
+ *             float sigmay: desvio padrï¿½o na vertical. Deve ser positivo,
  *               ou um dos 3 valores especiais.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
- * Valor de retorno: nenhum (usa a imagem de saída). */
+ * Valor de retorno: nenhum (usa a imagem de saï¿½da). */
 
-// Função auxiliar usada para calcular os coeficientes horizontais ou verticais seguindo uma função Gaussiana.
+// Funï¿½ï¿½o auxiliar usada para calcular os coeficientes horizontais ou verticais seguindo uma funï¿½ï¿½o Gaussiana.
 void _filtroGaussianoCalculaCoef (int largura, float sigma, float* coef)
 {
     // Valores especiais.
@@ -309,7 +309,7 @@ void _filtroGaussianoCalculaCoef (int largura, float sigma, float* coef)
         coef [i] *= total;
 }
 
-// Micro-função que retorna o número de coeficientes para um dado sigma.
+// Micro-funï¿½ï¿½o que retorna o nï¿½mero de coeficientes para um dado sigma.
 int _filtroGaussianoNCoef (float sigma)
 {
     // Primeiro, os valores especiais.
@@ -323,7 +323,7 @@ int _filtroGaussianoNCoef (float sigma)
         return (7);
 
     int n = (int) (sigma*4.0f + 0.5f);
-    n |= 1; // Precisa ser ímpar.
+    n |= 1; // Precisa ser ï¿½mpar.
     return (n);
 }
 
@@ -362,19 +362,19 @@ void filtroGaussiano (Imagem* in, Imagem* out, float sigmax, float sigmay, Image
 /* UNSHARP MASKING                                                            */
 /*============================================================================*/
 /** Realce de bordas usando unsharp masking. Borra a imagem, verifica a
- * diferença da original para a borrada, e soma a diferença em lugares onde
+ * diferenï¿½a da original para a borrada, e soma a diferenï¿½a em lugares onde
  * ela for grande.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
- *             float sigma: parâmetro para a suavização Gaussiana.
- *             float threshold: altera apenas regiões onde a diferença é grande.
- *             float mult: multiplica as diferenças por este valor. Valores
+ *             float sigma: parï¿½metro para a suavizaï¿½ï¿½o Gaussiana.
+ *             float threshold: altera apenas regiï¿½es onde a diferenï¿½a ï¿½ grande.
+ *             float mult: multiplica as diferenï¿½as por este valor. Valores
  *               mais altos implicam em bordas mais destacadas.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
  * Valor de retorno: nenhum. */
@@ -388,13 +388,13 @@ void unsharpMasking (Imagem* in, Imagem* out, float sigma, float threshold, floa
         exit (1);
     }
 
-    // Começa borrando a imagem...
+    // Comeï¿½a borrando a imagem...
     filtroGaussiano (in, out, sigma, sigma, buffer);
 
-    // Verifica a diferença da imagem original para a borrada.
+    // Verifica a diferenï¿½a da imagem original para a borrada.
     soma (in, out, 1, -1, out);
 
-    // Agora percorre a imagem e procura lugares com diferença grande. Realça a imagem nestes locais.
+    // Agora percorre a imagem e procura lugares com diferenï¿½a grande. Realï¿½a a imagem nestes locais.
     int channel, row, col;
     for (channel = 0; channel < in->n_canais; channel++)
         for (row = 0; row < in->altura; row++)
@@ -408,22 +408,22 @@ void unsharpMasking (Imagem* in, Imagem* out, float sigma, float threshold, floa
 /*============================================================================*/
 /* FILTRO DA MEDIANA                                                          */
 /*============================================================================*/
-/** Implementação clássica do filtro da mediana aproximado. Mantém um
- * histograma que é atualizado quando a janela desliza. Usamos um histograma
- * de 256 faixas, supondo que os pixels estão no intervalo [0,1]. Isso nos dá
- * resultados exatos para entradas e saídas com 8bpp. Este não é o algoritmo
- * mais rápido possível, mas é simples de implementar.
+/** Implementaï¿½ï¿½o clï¿½ssica do filtro da mediana aproximado. Mantï¿½m um
+ * histograma que ï¿½ atualizado quando a janela desliza. Usamos um histograma
+ * de 256 faixas, supondo que os pixels estï¿½o no intervalo [0,1]. Isso nos dï¿½
+ * resultados exatos para entradas e saï¿½das com 8bpp. Este nï¿½o ï¿½ o algoritmo
+ * mais rï¿½pido possï¿½vel, mas ï¿½ simples de implementar.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             int altura: altura da janela.
  *             int largura: largura da janela.
  *
- * Valor de retorno: nenhum (usa a imagem de saída). */
+ * Valor de retorno: nenhum (usa a imagem de saï¿½da). */
 
-// Função auxiliar, chamada pela filtroMediana8bpp para obter a mediana a partir de um histograma de 256 faixas.
+// Funï¿½ï¿½o auxiliar, chamada pela filtroMediana8bpp para obter a mediana a partir de um histograma de 256 faixas.
 int _medianaHistograma8bpp (int* hist, int total)
 {
     int i, soma = 0;
@@ -459,7 +459,7 @@ void filtroMediana8bpp (Imagem* in, Imagem* out, int altura, int largura)
     int h = altura/2;
     int saiu = -1, entrou = -1; // Para verificar se o histograma mudou.
 
-    // Este é o histograma. Para trabalhar nele, teremos que reconverter a imagem para 8bpp.
+    // Este ï¿½ o histograma. Para trabalhar nele, teremos que reconverter a imagem para 8bpp.
     int histograma [256];
     int n_histograma = 0;
 
@@ -483,13 +483,13 @@ void filtroMediana8bpp (Imagem* in, Imagem* out, int altura, int largura)
             for (i = 0; i < 256; i++)
                 histograma [i] = 0;
 
-            // Obtém o primeiro histograma para esta linha.
+            // Obtï¿½m o primeiro histograma para esta linha.
             for (i = MAX (0, row-h); i <= MIN (in->altura-1, row+h); i++)
                 for (j = 0; j <= w; j++)
                     histograma [in8bpp [i][j]]++;
-            n_histograma = (row+h-MAX(0,row-h)+1)*(w+1); // Número de valores na primeira janela.
+            n_histograma = (row+h-MAX(0,row-h)+1)*(w+1); // Nï¿½mero de valores na primeira janela.
 
-            // Obtém a mediana para o primeiro pixel.
+            // Obtï¿½m a mediana para o primeiro pixel.
             out->dados [channel][row][0] = _medianaHistograma8bpp (histograma, n_histograma) / 255.0f;
 
             // Agora vai para as colunas seguintes.
@@ -519,7 +519,7 @@ void filtroMediana8bpp (Imagem* in, Imagem* out, int altura, int largura)
                         entrou = -1;
                 }
 
-                // Obtém a mediana para esta posição.
+                // Obtï¿½m a mediana para esta posiï¿½ï¿½o.
                 if (saiu == entrou)
                     out->dados [channel][row][col] = out->dados [channel][row][col-1];
                 else
@@ -534,19 +534,19 @@ void filtroMediana8bpp (Imagem* in, Imagem* out, int altura, int largura)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Filtro da mediana para imagens binárias - implementação rápida com imagem
- * integral. Basta somar os valore em cada vizinhança e verificar se a soma
- * é maior do que a metade da área da vizinhança. O código é *muito* parecido
+/** Filtro da mediana para imagens binï¿½rias - implementaï¿½ï¿½o rï¿½pida com imagem
+ * integral. Basta somar os valore em cada vizinhanï¿½a e verificar se a soma
+ * ï¿½ maior do que a metade da ï¿½rea da vizinhanï¿½a. O cï¿½digo ï¿½ *muito* parecido
  * com o do box blur.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             int altura: altura da janela.
  *             int largura: largura da janela.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
  * Valor de retorno: nenhum */
@@ -593,7 +593,7 @@ void filtroMedianaBinario (Imagem* in, Imagem* out, int altura, int largura, Ima
                 integral->dados [channel][row][col] += integral->dados [channel][row-1][col];
     }
 
-    // Agora verifica onde a soma é maior do que a metade da área.
+    // Agora verifica onde a soma ï¿½ maior do que a metade da ï¿½rea.
     int top, left, bottom, right;
     float soma, area = (largura*altura)/2.0f;
 
@@ -611,7 +611,7 @@ void filtroMedianaBinario (Imagem* in, Imagem* out, int altura, int largura, Ima
                         ((left >= 0)? integral->dados [channel][bottom][left] : 0) -
                         ((top >= 0)? integral->dados [channel][top][right] : 0);
 
-                if (soma > area) // A maior parte dos pixels é branca.
+                if (soma > area) // A maior parte dos pixels ï¿½ branca.
                     out->dados [channel][row][col] = 1.0f;
                 else
                     out->dados [channel][row][col] = 0;
@@ -622,24 +622,24 @@ void filtroMedianaBinario (Imagem* in, Imagem* out, int altura, int largura, Ima
 }
 
 /*============================================================================*/
-/* MÁXIMOS E MÍNIMOS LOCAIS                                                   */
+/* Mï¿½XIMOS E Mï¿½NIMOS LOCAIS                                                   */
 /*============================================================================*/
-/** Localiza o máximo local em uma vizinhança da imagem. Consideramos que o
- * máximo local é um filtro espacial não-linear e separável.
+/** Localiza o mï¿½ximo local em uma vizinhanï¿½a da imagem. Consideramos que o
+ * mï¿½ximo local ï¿½ um filtro espacial nï¿½o-linear e separï¿½vel.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             int altura: altura da janela.
  *             int largura: largura da janela.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
- * Valor de retorno: nenhum (usa a imagem de saída). */
+ * Valor de retorno: nenhum (usa a imagem de saï¿½da). */
 
-int _maxLocalMaxLinha (Imagem* in, int channel, int row, int inicio, int fim) // Função auxiliar para a maxLocal.
+int _maxLocalMaxLinha (Imagem* in, int channel, int row, int inicio, int fim) // Funï¿½ï¿½o auxiliar para a maxLocal.
 {
     int col;
 
@@ -654,7 +654,7 @@ int _maxLocalMaxLinha (Imagem* in, int channel, int row, int inicio, int fim) //
     return (pos_max);
 }
 
-float _maxLocalMaxColuna (Imagem* in, int channel, int col, int inicio, int fim) // Função auxiliar para a maxLocal.
+float _maxLocalMaxColuna (Imagem* in, int channel, int col, int inicio, int fim) // Funï¿½ï¿½o auxiliar para a maxLocal.
 {
     int row;
 
@@ -734,22 +734,22 @@ void maxLocal (Imagem* in, Imagem* out, int altura, int largura, Imagem* buffer)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Localiza o mínimo local em uma vizinhança da imagem. Consideramos que o
- * mínimo local é um filtro espacial não-linear e separável.
+/** Localiza o mï¿½nimo local em uma vizinhanï¿½a da imagem. Consideramos que o
+ * mï¿½nimo local ï¿½ um filtro espacial nï¿½o-linear e separï¿½vel.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             int altura: altura da janela.
  *             int largura: largura da janela.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
- * Valor de retorno: nenhum (usa a imagem de saída). */
+ * Valor de retorno: nenhum (usa a imagem de saï¿½da). */
 
-int _minLocalMinLinha (Imagem* in, int channel, int row, int inicio, int fim) // Função auxiliar para a minLocal.
+int _minLocalMinLinha (Imagem* in, int channel, int row, int inicio, int fim) // Funï¿½ï¿½o auxiliar para a minLocal.
 {
     int col;
 
@@ -764,7 +764,7 @@ int _minLocalMinLinha (Imagem* in, int channel, int row, int inicio, int fim) //
     return (pos_min);
 }
 
-float _minLocalMinColuna (Imagem* in, int channel, int col, int inicio, int fim) // Função auxiliar para a minLocal.
+float _minLocalMinColuna (Imagem* in, int channel, int col, int inicio, int fim) // Funï¿½ï¿½o auxiliar para a minLocal.
 {
     int row;
 
@@ -844,14 +844,14 @@ void minLocal (Imagem* in, Imagem* out, int altura, int largura, Imagem* buffer)
 }
 
 /*============================================================================*/
-/* MORFOLOGIA MATEMÁTICA                                                      */
+/* MORFOLOGIA MATEMï¿½TICA                                                      */
 /*============================================================================*/
-/** Cria um kernel circular para operadores morfológicos. É somente uma imagem
- * preta com um círculo branco preenchido.
+/** Cria um kernel circular para operadores morfolï¿½gicos. ï¿½ somente uma imagem
+ * preta com um cï¿½rculo branco preenchido.
  *
- * Parâmetros: int largura: largura do kernel (= diâmetro do círculo).
+ * Parï¿½metros: int largura: largura do kernel (= diï¿½metro do cï¿½rculo).
  *
- * Valor de retorno: uma imagem contendo o kernel. Lembre-se de desalocá-la! */
+ * Valor de retorno: uma imagem contendo o kernel. Lembre-se de desalocï¿½-la! */
 
 Imagem* criaKernelCircular (int largura)
 {
@@ -879,13 +879,13 @@ Imagem* criaKernelCircular (int largura)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Dilatação morfológica para imagens binárias. Usei aqui uma implementação
+/** Dilataï¿½ï¿½o morfolï¿½gica para imagens binï¿½rias. Usei aqui uma implementaï¿½ï¿½o
  * extremeamente simples (e ineficiente).
  *
- * Parâmetros: Imagem* in: imagem de entrada.
- *             Imagem* kernel: kernel para a dilatação.
+ * Parï¿½metros: Imagem* in: imagem de entrada.
+ *             Imagem* kernel: kernel para a dilataï¿½ï¿½o.
  *             Coordenada centro: centro do kernel.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *
  * Valor de retorno: nenhum. */
@@ -921,13 +921,13 @@ void dilata (Imagem* in, Imagem* kernel, Coordenada centro, Imagem* out)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Erosão morfológica para imagens binárias. Usei aqui uma implementação
+/** Erosï¿½o morfolï¿½gica para imagens binï¿½rias. Usei aqui uma implementaï¿½ï¿½o
  * extremeamente simples (e ineficiente).
  *
- * Parâmetros: Imagem* in: imagem de entrada.
- *             Imagem* kernel: kernel para a erosão.
+ * Parï¿½metros: Imagem* in: imagem de entrada.
+ *             Imagem* kernel: kernel para a erosï¿½o.
  *             Coordenada centro: centro do kernel.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *
  * Valor de retorno: nenhum. */
@@ -963,15 +963,15 @@ void erode (Imagem* in, Imagem* kernel, Coordenada centro, Imagem* out)
 }
 
 /*----------------------------------------------------------------------------*/
-/** Abertura morfológica: erosão seguida de dilatação.
+/** Abertura morfolï¿½gica: erosï¿½o seguida de dilataï¿½ï¿½o.
  *
- * Parâmetros: Imagem* in: imagem de entrada.
- *             Imagem* kernel: kernel para a dilatação/erosão.
+ * Parï¿½metros: Imagem* in: imagem de entrada.
+ *             Imagem* kernel: kernel para a dilataï¿½ï¿½o/erosï¿½o.
  *             Coordenada centro: centro do kernel.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
  * Valor de retorno: nenhum. */
@@ -995,15 +995,15 @@ void abertura (Imagem* in, Imagem* kernel, Coordenada centro, Imagem* out, Image
 }
 
 /*----------------------------------------------------------------------------*/
-/** Fechamento morfológico: dilatação seguida de erosão.
+/** Fechamento morfolï¿½gico: dilataï¿½ï¿½o seguida de erosï¿½o.
  *
- * Parâmetros: Imagem* in: imagem de entrada.
- *             Imagem* kernel: kernel para a dilatação/erosão.
+ * Parï¿½metros: Imagem* in: imagem de entrada.
+ *             Imagem* kernel: kernel para a dilataï¿½ï¿½o/erosï¿½o.
  *             Coordenada centro: centro do kernel.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             Imagem* buffer: uma imagem com o mesmo tamanho da imagem de
- *               entrada. Pode ser usada quando se quer evitar a alocação do
+ *               entrada. Pode ser usada quando se quer evitar a alocaï¿½ï¿½o do
  *               buffer interno. Use NULL se quiser usar o buffer interno.
  *
  * Valor de retorno: nenhum. */
@@ -1031,22 +1031,22 @@ void fechamento (Imagem* in, Imagem* kernel, Coordenada centro, Imagem* out, Ima
 /* GRADIENTES                                                                 */
 /*============================================================================*/
 /** Filtro de Sobel. Cria um kernel apropriado e aplica como um filtro espacial
- * linear genérico.
+ * linear genï¿½rico.
  *
- * Parâmetros: Imagem* in: iimagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: iimagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
- *             Imagem* out: imagem de saída. Deve ter o mesmo tamanho da
+ *             Imagem* out: imagem de saï¿½da. Deve ter o mesmo tamanho da
  *               imagem de entrada.
  *             int tamanho: tamanho do filtro. Deve ser 1, 3, 5 ou 7. O filtro
  *               de tamanho 1 na verdade usa o kernel simples [-1, 0, 1].
  *             int vertical: 1 para o filtro vertical, 0 para o horizontal.
- *             int escalado: se != 0, os valores são escalados para não
- *               saírem do intervalo [-1,1] (considerando que a imagem de
- *               entrada está normalizada).
+ *             int escalado: se != 0, os valores sï¿½o escalados para nï¿½o
+ *               saï¿½rem do intervalo [-1,1] (considerando que a imagem de
+ *               entrada estï¿½ normalizada).
  *
  * Valor de retorno: nenhum. */
 
-// Sub-função chamada para criar o kernel.
+// Sub-funï¿½ï¿½o chamada para criar o kernel.
 float** _filtroSobelCriaKernel (int tamanho, int escalado)
 {
     int i, j;
@@ -1136,7 +1136,7 @@ void filtroSobel (Imagem* in, Imagem* out, int tamanho, int vertical, int escala
         exit (1);
     }
 
-    // O kernel de tamanho 1 na verdade é o gradiente simples [-1, 0, 1].
+    // O kernel de tamanho 1 na verdade ï¿½ o gradiente simples [-1, 0, 1].
     if (tamanho == 1)
     {
         float kernel [3];
@@ -1150,7 +1150,7 @@ void filtroSobel (Imagem* in, Imagem* out, int tamanho, int vertical, int escala
     // Para kernels de tamanho 3, 5 ou 7. Primeiro cria o kernel.
     float** kernel = _filtroSobelCriaKernel (tamanho, escalado);
 
-    // Agora, chama a função genérica.
+    // Agora, chama a funï¿½ï¿½o genï¿½rica.
     filtro2D (in, out, kernel, tamanho, tamanho, vertical);
 
     // Desaloca.
@@ -1163,20 +1163,20 @@ void filtroSobel (Imagem* in, Imagem* out, int tamanho, int vertical, int escala
 /*----------------------------------------------------------------------------*/
 /** Calcula os gradientes da imagem.
  *
- * Parâmetros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
+ * Parï¿½metros: Imagem* in: imagem de entrada. Se tiver mais que 1 canal,
  *               processa cada canal independentemente.
  *             int tamanho_sobel: tamanho do filtro de Sobel a se usar para
  *               obter as derivadas. Deve ser 1, 3, 5 ou 7. O filtro
  *               de tamanho 1 na verdade usa o kernel simples [-1, 0, 1].
  *             Imagem* dx: se for != NULL, usa esta imagem para as derivadas
  *               horizontais. Neste caso, deve ter o mesmo tamanho da imagem
- *               de entrada. Se for == NULL, o buffer é criado internamente.
+ *               de entrada. Se for == NULL, o buffer ï¿½ criado internamente.
  *             Imagem* dy: se for != NULL, usa esta imagem para as derivadas
  *               verticais. Neste caso, deve ter o mesmo tamanho da imagem
- *               de entrada. Se for == NULL, o buffer é criado internamente.
- *             Imagem* mag: imagem de saída para as magnitudes. Deve ter o
+ *               de entrada. Se for == NULL, o buffer ï¿½ criado internamente.
+ *             Imagem* mag: imagem de saï¿½da para as magnitudes. Deve ter o
  *               mesmo tamanho da imagem de entrada.
- *             Imagem* ori: imagem de saída para as orientações. Os valores são
+ *             Imagem* ori: imagem de saï¿½da para as orientaï¿½ï¿½es. Os valores sï¿½o
  *               dados em radianos, no intervalo [0,2pi). Deve ter o mesmo
  *               tamanho da imagem de entrada.
  *
@@ -1206,7 +1206,7 @@ void computaGradientes (Imagem* in, int tamanho_sobel, Imagem* dx, Imagem* dy, I
     // Filtro de Sobel.
     if (tamanho_sobel == 1)
     {
-        // O kernel de tamanho 1 na verdade é o gradiente simples [-1, 0, 1].
+        // O kernel de tamanho 1 na verdade ï¿½ o gradiente simples [-1, 0, 1].
         float kernel [3];
         kernel [0] = -1;
         kernel [1] = 0;
@@ -1221,7 +1221,7 @@ void computaGradientes (Imagem* in, int tamanho_sobel, Imagem* dx, Imagem* dy, I
         filtro2D (in, _dy, kernel, tamanho_sobel, tamanho_sobel, 1);
     }
 
-    // Magnitude e orientação.
+    // Magnitude e orientaï¿½ï¿½o.
     int channel, row, col;
     float x, y;
     float PI_TIMES_2 = 2.0f * M_PI;
@@ -1234,7 +1234,7 @@ void computaGradientes (Imagem* in, int tamanho_sobel, Imagem* dx, Imagem* dy, I
                 mag->dados [channel][row][col] = sqrtf (x*x + y*y);
                 ori->dados [channel][row][col] = atan2 (y, x);
 
-                if (ori->dados [channel][row][col] < 0) // Coloca no intervalo [0,2PI). A saída da atan2 é no intervalo [-PI,PI].
+                if (ori->dados [channel][row][col] < 0) // Coloca no intervalo [0,2PI). A saï¿½da da atan2 ï¿½ no intervalo [-PI,PI].
                     ori->dados [channel][row][col] += PI_TIMES_2;
             }
 
