@@ -5,7 +5,7 @@
 #include "cores.h"
 
 int main () {
-    Imagem* img = abreImagem("./img/4.bmp", 3);
+    Imagem* img = abreImagem("./img/5.bmp", 3);
     // Imagem *img_galssian = criaImagem(img->largura, img->altura, 1);
     Imagem *img_galssian = clonaImagem(img);
 
@@ -36,6 +36,28 @@ int main () {
         }
     }
 
+    aux = clonaImagem(out);
+
+
+    //  =========================================================
+    // Usando dilatação para remover ruídos das máscaras. Pode não ser a melhor a abordagem
+    Imagem *kernel = criaImagem(10 ,10 , 1);
+    Coordenada cod;
+    cod.x = 1;
+    cod.y= 1;
+    for (int canal = 0; canal < 1; canal++) {
+        for (int i = 0; i < kernel->altura; i++) {
+            for (int j = 0; j < kernel->largura; j++) {
+                kernel->dados[canal][i][j] = 1;
+            }
+        }
+    }
+
+    kernel->dados[0][cod.x][cod.y] = 0;
+
+    dilata(aux, kernel, cod, out);
+    // ====================================================================================================
+
     salvaImagem(out, "out.bmp");
 
     salvaImagem(r, "r.bmp");
@@ -46,6 +68,7 @@ int main () {
     destroiImagem(img_galssian);
     destroiImagem(aux);
     destroiImagem(out);
+    destroiImagem(kernel);
     destroiImagem(b);
     destroiImagem(g);
     destroiImagem(r);
