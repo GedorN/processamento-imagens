@@ -5,16 +5,16 @@
 #include "cores.h"
 
 int main () {
-    Imagem* img = abreImagem("./img/5.bmp", 3);
+    Imagem* img = abreImagem("./img/0.bmp", 3);
+    Imagem *background_aux = abreImagem("./background.bmp", 3);
+    Imagem *out = criaImagem(img->largura, img->altura, 3);
+    Imagem *background = criaImagem(img->largura, img->altura, 3);
+
     // Imagem *img_galssian = criaImagem(img->largura, img->altura, 1);
     Imagem *img_galssian = clonaImagem(img);
 
     Imagem *aux = criaImagem(img->largura, img->altura, 3);
-    Imagem *out = criaImagem(img->largura, img->altura, 1);
-
-    Imagem *r = criaImagem(img->largura, img->altura, 1);
-    Imagem *g = criaImagem(img->largura, img->altura, 1);
-    Imagem *b = criaImagem(img->largura, img->altura, 1);
+    Imagem *mask = criaImagem(img->largura, img->altura, 1);
 
     RGBParaHSL(img, aux);
 
@@ -29,14 +29,14 @@ int main () {
             float saturation = aux->dados[1][i][j];
             float luminance = aux->dados[2][i][j];
             if (hue > 60 && hue < 180 && saturation >= 0.170 && luminance >= 0.120) {
-                out->dados[0][i][j] = 0;
+                mask->dados[0][i][j] = 0;
             } else {
-                out->dados[0][i][j] = 1;
+                mask->dados[0][i][j] = 1;
             }
         }
     }
 
-    aux = clonaImagem(out);
+    aux = clonaImagem(mask);
 
 
     //  =========================================================
@@ -55,23 +55,46 @@ int main () {
 
     kernel->dados[0][cod.x][cod.y] = 0;
 
-    dilata(aux, kernel, cod, out);
+    dilata(aux, kernel, cod, mask);
     // ====================================================================================================
 
-    salvaImagem(out, "out.bmp");
+    redimensionaNN(background_aux, background);
+    printf("D: %d\n", img->largura);
+    printf("D: %d\n", background->largura);
+    printf("D: %d\n", out->largura);
 
-    salvaImagem(r, "r.bmp");
-    salvaImagem(g, "g.bmp");
-    salvaImagem(b, "b.bmp");
+    for (int i = 0; i < background->altura; i++) {
+        for (int j = 0; j < background->largura; j++) {
+            if (mask->dados[0][i][j] == 1) {
+                // printf("A\n");
+                out->dados[0][i][j] = img->dados[0][i][j];
+                out->dados[1][i][j] = img->dados[1][i][j];
+                out->dados[2][i][j] = img->dados[2][i][j];
+                // printf("AAA\n");
+            } else {
+                // printf("B\n");
+                out->dados[0][i][j] = background->dados[0][i][j];
+                out->dados[1][i][j] = background->dados[1][i][j];
+                out->dados[2][i][j] = background->dados[2][i][j];
+                // printf("BBB\n");
+            }
+
+        }
+    }
+
+    printf("Saiu\n");
+
+    salvaImagem(mask, "mask.bmp");
+    salvaImagem(out, "out.bmp");
 
     destroiImagem(img);
     destroiImagem(img_galssian);
     destroiImagem(aux);
+    destroiImagem(mask);
     destroiImagem(out);
     destroiImagem(kernel);
-    destroiImagem(b);
-    destroiImagem(g);
-    destroiImagem(r);
+    destroiImagem(background_aux);
+    destroiImagem(background);
 
     return 0;
 }
