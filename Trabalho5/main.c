@@ -57,7 +57,7 @@ borderProcessing(Imagem* in, Imagem* background, Imagem* mask, Imagem* out, int 
 }
 
 int main () {
-    Imagem* img = abreImagem("./img/7.bmp", 3);
+    Imagem* img = abreImagem("./img/0.bmp", 3);
     Imagem *aux = criaImagem(img->largura, img->altura, 3);
 
     Imagem *background = criaImagem(img->largura, img->altura, 3);
@@ -74,19 +74,22 @@ int main () {
 
     RGBParaHSL(img, aux);
 
+
     // Cria a máscara binária
     for (int i = 0; i < aux->altura; i++) {
         for (int j = 0; j < aux->largura; j++) {
             float hue = aux->dados[0][i][j];
             float saturation = aux->dados[1][i][j];
             float luminance = aux->dados[2][i][j];
-            if (hue > 60 && hue < 180 && saturation >= 0.170 && luminance >= 0.120) {
+            if ((hue > 80 && hue < 160) && (saturation >= 0.128 && saturation >= 0.320) && (luminance >= 0.120 && luminance <= 0.8)) {
                 mask->dados[0][i][j] = 0;
             } else {
                 mask->dados[0][i][j] = 1;
             }
         }
     }
+
+    filtroMedianaBinario(mask, mask, 3, 3, NULL);
 
 
 
