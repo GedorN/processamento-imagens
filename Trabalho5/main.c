@@ -4,27 +4,79 @@
 #include "filtros2d.h"
 #include "cores.h"
 
+#define KERNEL_I 2
+#define KERNEL_J 6
+
+borderProcessing(Imagem* in, Imagem* background, Imagem* mask, Imagem* out, int **kernel) {
+    Imagem* aux = clonaImagem(in);
+    filtroGaussiano(in, aux, 15, 15, NULL);
+    for (int i = 0; i < in->altura; i++) {
+        for (int j = 0; j < in->largura; j++) {
+
+            int apply_kernel = 1;
+
+            if ((j + KERNEL_J - 1) < mask->largura && (i + KERNEL_I - 1) < mask->altura) {
+
+                for (int ki = 0; ki < KERNEL_I; ki++) {
+                    for (int kj = 0; kj < KERNEL_J; kj++) {
+                        if (kernel[ki][kj] == 1 && mask->dados[0][i + ki][j + kj] == 0) {
+                            apply_kernel = 0;
+                            break;
+                        }
+                        if (kernel[ki][kj] == 0 && mask->dados[0][i + ki][j + kj] == 1) {
+                            apply_kernel = 0;
+                            break;
+                        }
+                    }
+                    if (apply_kernel == 0) {
+                        break;
+                    }
+                }
+
+                if (apply_kernel == 1) {
+                    for (int ki = 0; ki < KERNEL_I; ki++) {
+                        for (int kj = 0; kj < KERNEL_J; kj++) {
+                            if (kernel[ki][kj] == 1) {
+                                out->dados[0][i + ki][j + kj] = in->dados[0][i + ki][j + kj];
+                                out->dados[1][i + ki][j + kj] = in->dados[1][i + ki][j + kj];
+                                out->dados[2][i + ki][j + kj] = in->dados[2][i + ki][j + kj];
+                            } else {
+                                out->dados[0][i + ki][j + kj] = aux->dados[0][i + ki][j + kj];
+                                out->dados[1][i + ki][j + kj] = aux->dados[1][i + ki][j + kj];
+                                out->dados[2][i + ki][j + kj] = aux->dados[2][i + ki][j + kj];
+                            }
+                        }
+                    }                    
+                }
+
+
+            }
+        }
+    }
+    destroiImagem(aux);
+}
+
 int main () {
-    Imagem* img = abreImagem("./img/0.bmp", 3);
-    Imagem *background_aux = abreImagem("./background.bmp", 3);
-    Imagem *out = criaImagem(img->largura, img->altura, 3);
-    Imagem *background = criaImagem(img->largura, img->altura, 3);
-
-    // Imagem *img_galssian = criaImagem(img->largura, img->altura, 1);
-    Imagem *img_galssian = clonaImagem(img);
-
+    Imagem* img = abreImagem("./img/7.bmp", 3);
     Imagem *aux = criaImagem(img->largura, img->altura, 3);
+
+    Imagem *background = criaImagem(img->largura, img->altura, 3);
+    Imagem *background_aux = abreImagem("./background.bmp", 3);
+    redimensionaNN(background_aux, background);
+    destroiImagem(background_aux);
+
+
+    
     Imagem *mask = criaImagem(img->largura, img->altura, 1);
+    Imagem *out = criaImagem(img->largura, img->altura, 3);
+
+
 
     RGBParaHSL(img, aux);
 
+    // Cria a máscara binária
     for (int i = 0; i < aux->altura; i++) {
         for (int j = 0; j < aux->largura; j++) {
-            if (i == 0 && j ==0) {
-                printf("%f\n", aux->dados[0][0][0]);
-                printf("%f\n", aux->dados[1][0][0]);
-                printf("%f\n", aux->dados[2][0][0]);
-            }
             float hue = aux->dados[0][i][j];
             float saturation = aux->dados[1][i][j];
             float luminance = aux->dados[2][i][j];
@@ -36,64 +88,39 @@ int main () {
         }
     }
 
-    aux = clonaImagem(mask);
 
 
-    //  =========================================================
-    // Usando dilatação para remover ruídos das máscaras. Pode não ser a melhor a abordagem
-    Imagem *kernel = criaImagem(10 ,10 , 1);
-    Coordenada cod;
-    cod.x = 1;
-    cod.y= 1;
-    for (int canal = 0; canal < 1; canal++) {
-        for (int i = 0; i < kernel->altura; i++) {
-            for (int j = 0; j < kernel->largura; j++) {
-                kernel->dados[canal][i][j] = 1;
-            }
-        }
-    }
-
-    kernel->dados[0][cod.x][cod.y] = 0;
-
-    dilata(aux, kernel, cod, mask);
-    // ====================================================================================================
-
-    redimensionaNN(background_aux, background);
-    printf("D: %d\n", img->largura);
-    printf("D: %d\n", background->largura);
-    printf("D: %d\n", out->largura);
-
+    //  Passa a imagem de entrada e o background pela máscara
     for (int i = 0; i < background->altura; i++) {
         for (int j = 0; j < background->largura; j++) {
             if (mask->dados[0][i][j] == 1) {
-                // printf("A\n");
                 out->dados[0][i][j] = img->dados[0][i][j];
                 out->dados[1][i][j] = img->dados[1][i][j];
                 out->dados[2][i][j] = img->dados[2][i][j];
-                // printf("AAA\n");
             } else {
-                // printf("B\n");
                 out->dados[0][i][j] = background->dados[0][i][j];
                 out->dados[1][i][j] = background->dados[1][i][j];
                 out->dados[2][i][j] = background->dados[2][i][j];
-                // printf("BBB\n");
             }
 
         }
     }
 
-    printf("Saiu\n");
+
+    // Tratamento de bordas
+    int kernel[KERNEL_I][KERNEL_J] = { {0, 0, 0, 0, 1, 1},
+                                       {0, 0, 0, 0, 1, 1}},
+    
+    borderProcessing(img, background, mask, out, kernel);
+
 
     salvaImagem(mask, "mask.bmp");
     salvaImagem(out, "out.bmp");
 
     destroiImagem(img);
-    destroiImagem(img_galssian);
     destroiImagem(aux);
     destroiImagem(mask);
     destroiImagem(out);
-    destroiImagem(kernel);
-    destroiImagem(background_aux);
     destroiImagem(background);
 
     return 0;
